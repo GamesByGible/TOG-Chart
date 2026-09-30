@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#FAF6EF">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<title>TOG Dress</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAF6EF;--card:#fff;--ink:#2B2620;--mut:#8A8074;--acc:#C4622D;--line:#EADFCF;--ok:#3E8E5A;--warn:#C4622D;--cold:#3F7CAC}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+.mono{font-family:'Roboto Mono',monospace}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(12px + env(safe-area-inset-top)) 16px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:19px;font-weight:700}
+header small{color:var(--mut);font-size:12px}
+.icon-btn{width:42px;height:42px;border:0;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:18px;color:var(--acc)}
+main{padding:14px 16px;max-width:520px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.lbl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:6px}
+.stepper{display:flex;align-items:center;justify-content:space-between}
+.stepper button{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--bg);font-size:26px;color:var(--acc)}
+.big{font-size:44px;font-weight:700}
+.row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:5px 0}
+.row span:first-child{color:var(--mut);white-space:nowrap}
+.row span:last-child{text-overflow:ellipsis;overflow:hidden;text-align:right}
+.tog{display:flex;align-items:baseline;gap:8px}
+.tog .n{font-size:52px;font-weight:700;color:var(--acc)}
+.tog .u{font-size:16px;font-weight:600;color:var(--mut)}
+ul{margin:8px 0 0;padding-left:20px}li{margin:4px 0;font-size:15px}
+.note{font-size:13px;color:var(--mut);margin-top:8px;line-height:1.4}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--bg);border:1px solid var(--line)}
+.pill.hot{color:var(--warn)}.pill.cold{color:var(--cold)}.pill.ok{color:var(--ok)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:7px 4px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:11px;color:var(--mut);text-transform:uppercase}
+tr.on td{background:#FBE9DC;font-weight:600}
+.seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px;margin-top:6px}
+.seg button{flex:1;border:0;background:none;padding:9px 4px;border-radius:99px;font:600 13px Inter;color:var(--mut)}
+.seg button.on{background:var(--acc);color:#fff}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;padding:10px 0 12px;font:600 12px Inter;color:var(--mut)}
+nav button b{display:block;font-size:20px;margin-bottom:2px}
+nav button.on{color:var(--acc)}
+.warn{background:#FDF1E8;border-color:#F0CDB3;font-size:13px;line-height:1.4}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.cell{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 4px 12px;text-align:center;min-width:0}
+.cell svg{width:76px;height:76px;display:block;margin:6px auto 4px}
+.cell .cap{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+.cell .val{font-size:26px;font-weight:700;color:var(--acc);line-height:1.1}
+.cell .val.t{font-size:22px}
+.cell .sub{font-size:11px;color:var(--mut);margin-top:2px}
+</style>
+</head>
+<body>
+<header>
+  <div><h1 id="title">Overnight</h1><small id="sub">Panania</small></div>
+  <button class="icon-btn" id="refresh" aria-label="Refresh weather">&#8635;</button>
+</header>
+<main id="main"></main>
+<nav>
+  <button data-v="night"><b>&#9790;</b>Overnight</button>
+  <button data-v="day"><b>&#9728;</b>Daytime</button>
+  <button data-v="set"><b>&#9881;</b>Settings</button>
+</nav>
+<script>
+// ---------- Data ----------
+const NIGHT=[
+ {min:27,bag:0,sl:'Short',sg:false,n:'Too warm for a sleep suit. Short-sleeve bodysuit only, with a light muslin at most.'},
+ {min:24,bag:0.5,sl:'Short',sg:false},
+ {min:22,bag:1,sl:'Short',sg:false},
+ {min:20,bag:1,sl:'Long',sg:false},
+ {min:18,bag:2.5,sl:'Long',sg:false},
+ {min:16,bag:2.5,sl:'Long',sg:true},
+ {min:12,bag:3.5,sl:'Long',sg:true},
+ {min:-99,bag:3.5,sl:'Long',sg:true,n:'Very cold room. Consider gentle heating.'}
+];
+const outfit=b=>`${b.bag?b.bag+' TOG':'No'} sleep suit &middot; ${b.sl.toLowerCase()} bodysuit &middot; ${b.sg?'singlet':'no singlet'}`;
+
+const IN=[
+ {min:26,l:['Nappy + short-sleeve bodysuit or singlet']},
+ {min:23,l:['Short-sleeve bodysuit','Light pants or shorts']},
+ {min:20,l:['Long-sleeve bodysuit','Pants','Socks']},
+ {min:17,l:['Long-sleeve bodysuit','Pants','Socks','Light cardigan or jumper']},
+ {min:-99,l:['Bodysuit','Warm pants','Socks','Jumper or fleece layer']}
+];
+const OUT=[
+ {min:28,l:['Light breathable short sleeves','Wide-brim sun hat','Stay in shade']},
+ {min:23,l:['Light bodysuit + shorts or light pants','Sun hat']},
+ {min:18,l:['Long-sleeve top + pants','Socks','Light layer to add or remove']},
+ {min:13,l:['Indoor outfit + jumper','Light jacket','Socks or booties','Beanie if windy']},
+ {min:-99,l:['Warm base layers','Fleece or puffer','Beanie, socks, mittens']}
+];
+const INS={poor:.5,avg:.35,good:.2};
+const K='togdress.v1',W='togdress.wx';
+let S=Object.assign({room:20,insul:'avg',baby:0,view:'night'},JSON.parse(localStorage.getItem(K)||'{}'));
+let wx=JSON.parse(localStorage.getItem(W)||'null');
+const save=()=>localStorage.setItem(K,JSON.stringify(S));
+const pick=(t,arr)=>arr.find(b=>t>=b.min);
+const f1=x=>(Math.round(x*10)/10).toFixed(1);
+const $=id=>document.getElementById(id);
+
+// ---------- Weather (Open-Meteo, Panania) ----------
+async function loadWx(){
+  $('sub').textContent='Updating weather…';
+  try{
+    const u='https://api.open-meteo.com/v1/forecast?latitude=-33.95&longitude=151.00'
+      +'&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m'
+      +'&hourly=temperature_2m,precipitation_probability'
+      +'&daily=temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_probability_max'
+      +'&timezone=Australia%2FSydney&forecast_days=2';
+    const j=await (await fetch(u)).json();
+    const c=j.current,h=j.hourly,d=j.daily;
+    const day=c.time.slice(0,10),hr=+c.time.slice(11,13);
+    const i0=h.time.indexOf(day+'T00:00');
+    const end=hr<6?day+'T06:00':h.time[i0+30];
+    const start=hr<19?(hr<6?c.time:day+'T19:00'):c.time;
+    const idx=h.time.map((t,i)=>t>=start&&t<=end?i:-1).filter(i=>i>=0);
+    const nt=idx.map(i=>h.temperature_2m[i]);
+    wx={t:c.temperature_2m,feel:c.apparent_temperature,wind:c.wind_speed_10m,rain:c.precipitation,
+        max:d.temperature_2m_max[0],min:d.temperature_2m_min[0],uv:d.uv_index_max[0],pop:d.precipitation_probability_max[0],
+        nightLow:Math.min(...nt),nightHigh:Math.max(...nt),at:c.time};
+    localStorage.setItem(W,JSON.stringify(wx));
+  }catch(e){wx&&(wx.stale=true)}
+  render();
+}
+
+// ---------- Views ----------
+const ST='stroke="#2B2620" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+const BAG='M32 8H42Q50 26 58 8H68Q70 26 76 40Q88 66 86 84Q84 94 70 95H30Q16 94 14 84Q12 66 24 40Q30 26 32 8Z';
+function svgSuit(bag){
+  if(!bag)return `<svg viewBox="0 0 100 100"><path d="${BAG}" fill="none" stroke="#B8AC9C" stroke-width="2.5" stroke-dasharray="5 5"/><path d="M20 92L80 8" stroke="#C4622D" stroke-width="4" stroke-linecap="round"/></svg>`;
+  const op=(0.2+bag*0.16).toFixed(2);
+  return `<svg viewBox="0 0 100 100"><path d="${BAG}" fill="#C4622D" fill-opacity="${op}" ${ST}/><path d="M50 24V82" fill="none" ${ST}/><circle cx="50" cy="84" r="2.2" fill="#2B2620"/></svg>`;
+}
+function svgBody(sl){
+  const L=sl==='Long';
+  const p=L
+   ?'M36 10Q50 20 64 10L86 26 96 58 87 62 68 38V88Q68 95 58 95H54Q52 95 52 88V64Q50 62 48 64V88Q48 95 46 95H42Q32 95 32 88V38L13 62 4 58 14 26Z'
+   :'M36 10Q50 22 64 10L84 20 78 38 68 34V78H53V68Q50 62 47 68V78H32V34L22 38 16 20Z';
+  const extra=L?'':`<path d="M53 72H68M32 72H47" fill="none" ${ST}/>`;
+  return `<svg viewBox="0 0 100 100"><path d="${p}" fill="#C4622D" fill-opacity=".28" ${ST}/>${extra}</svg>`;
+}
+function svgSing(on){
+  if(!on)return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="#B8AC9C" stroke-width="2.5" stroke-dasharray="5 5"/><path d="M29 71L71 29" stroke="#C4622D" stroke-width="4" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="0 0 100 100"><path d="M35 10H41Q50 32 59 10H65L69 36 67 88Q50 94 33 88L31 36Z" fill="#C4622D" fill-opacity=".28" ${ST}/></svg>`;
+}
+function roomCard(){
+  return `<div class="card"><div class="lbl">Room temperature now</div>
+  <div class="stepper"><button data-d="-0.5">&minus;</button>
+  <div class="big mono">${f1(S.room)}&deg;</div><button data-d="0.5">+</button></div></div>`;
+}
+function wxLine(){
+  if(!wx)return `<div class="card warn">No weather yet. Connect to the internet and tap &#8635;. Recommendations use room temperature only for now.</div>`;
+  return wx.stale?`<div class="card warn">Couldn't refresh, showing weather from ${wx.at.replace('T',' ')}.</div>`:'';
+}
+function chartTable(rows,cur){
+  const out=rows.map((b,i)=>{
+    const rng=b.min<-90?`Under ${rows[i-1].min}&deg;`:i===0?`${b.min}&deg;+`:`${b.min}&ndash;${rows[i-1].min}&deg;`;
+    return `<tr class="${b===cur?'on':''}"><td class="mono">${rng}</td><td class="mono">${b.bag||'None'}</td><td>${b.sl}</td><td>${b.sg?'Yes':'No'}</td></tr>`;
+  }).join('');
+  return `<div class="card"><div class="lbl">TOG chart</div><table><tr><th>Room</th><th>Suit TOG</th><th>Bodysuit</th><th>Singlet</th></tr>${out}</table>
+  <div class="note">Typical guidance is a room of about 16&ndash;20&deg;C. Highlighted row is tonight's pick.</div></div>`;
+}
+function night(){
+  const eff=S.room+S.baby;
+  let low=S.room,note='';
+  if(wx&&wx.nightLow<S.room)low=S.room-INS[S.insul]*(S.room-wx.nightLow);
+  const lowE=low+S.baby,mid=(eff+lowE)/2;
+  const b=pick(mid,NIGHT),bNow=pick(eff,NIGHT),bLow=pick(lowE,NIGHT);
+  let flag='';
+  if(bNow!==bLow)flag=`<div class="card warn">Room may drop from <b class="mono">${f1(S.room)}&deg;</b> to about <b class="mono">${f1(low)}&deg;</b> overnight.<br>Bedtime alone: ${outfit(bNow)}<br>Coldest point: ${outfit(bLow)}<br>The pick above splits the difference. If unsure, go lighter and check baby later.</div>`;
+  const tag=eff>=25?'<span class="pill hot">Warm room</span>':eff<16?'<span class="pill cold">Cool room</span>':'<span class="pill ok">In range</span>';
+  return roomCard()+wxLine()+`
+  <div class="card"><div class="lbl">Tonight's pick ${tag}</div>
+  <div class="trio">
+   <div class="cell"><div class="cap">Sleep suit</div>${svgSuit(b.bag)}<div class="val mono">${b.bag?b.bag:'None'}</div><div class="sub">${b.bag?'TOG':'no sleep suit'}</div></div>
+   <div class="cell"><div class="cap">Bodysuit</div>${svgBody(b.sl)}<div class="val t">${b.sl}</div><div class="sub">sleeve</div></div>
+   <div class="cell"><div class="cap">Underneath</div>${svgSing(b.sg)}<div class="val t">${b.sg?'Singlet':'None'}</div><div class="sub">${b.sg?'under bodysuit':'no singlet'}</div></div>
+  </div>
+  ${b.n?`<div class="note">${b.n}</div>`:''}</div>`+flag+
+  (wx?`<div class="card"><div class="lbl">Outside overnight</div>
+  <div class="row"><span>Now</span><span class="mono">${f1(wx.t)}&deg;</span></div>
+  <div class="row"><span>Overnight range</span><span class="mono">${f1(wx.nightLow)}&deg; &ndash; ${f1(wx.nightHigh)}&deg;</span></div>
+  <div class="row"><span>Est. room at coolest</span><span class="mono">${f1(low)}&deg;</span></div>
+  <div class="note">Estimate based on your house insulation setting.</div></div>`:'')+
+  chartTable(NIGHT,b)+
+  `<div class="note">Check baby's chest or back of neck, not hands or feet: sweaty means too warm. Keep the face and head uncovered, no hats or loose bedding in the cot. A guide only, not medical advice.</div>`;
+}
+function day(){
+  const eff=S.room+S.baby,ib=pick(eff,IN);
+  let out='';
+  if(wx){
+    const ft=wx.feel+S.baby,ob=pick(ft,OUT);
+    const extra=[];
+    if(wx.rain>0||wx.pop>=50)extra.push(`Rain likely (${wx.pop}%): rain cover or waterproof layer`);
+    if(wx.uv>=3)extra.push(`UV up to ${Math.round(wx.uv)}: sun hat and shade`);
+    if(wx.wind>=25)extra.push('Windy: add a windproof layer');
+    if(wx.max-wx.min>=9)extra.push(`Big swing (${Math.round(wx.min)}&deg;&ndash;${Math.round(wx.max)}&deg;): pack a spare layer`);
+    extra.push('In the car seat: skip bulky jackets, lay a blanket over the harness');
+    out=`<div class="card"><div class="lbl">Going out</div>
+    <div class="row"><span>Feels like</span><span class="mono">${f1(wx.feel)}&deg; (air ${f1(wx.t)}&deg;)</span></div>
+    <div class="row"><span>Today</span><span class="mono">${Math.round(wx.min)}&deg; &ndash; ${Math.round(wx.max)}&deg;</span></div>
+    <ul>${ob.l.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <div class="lbl" style="margin-top:12px">Also</div><ul>${extra.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+  }
+  return roomCard()+wxLine()+`<div class="card"><div class="lbl">Indoors now</div>
+  <ul>${ib.l.map(x=>`<li>${x}</li>`).join('')}</ul>
+  <div class="note">Daytime awake wear, no sleeping bag. Bag guidance for naps is on the Overnight tab.</div></div>`+out;
+}
+function settings(){
+  const seg=(k,opts)=>`<div class="seg">${opts.map(([v,t])=>`<button data-k="${k}" data-val="${v}" class="${String(S[k])===String(v)?'on':''}">${t}</button>`).join('')}</div>`;
+  return `<div class="card"><div class="lbl">House holds heat</div>${seg('insul',[['poor','Leaky'],['avg','Average'],['good','Well insulated']])}
+  <div class="note">Controls how fast the room is estimated to cool towards the outside temperature overnight.</div></div>
+  <div class="card"><div class="lbl">Baby tends to run</div>${seg('baby',[[1,'Warm'],[0,'Average'],[-1,'Cool']])}
+  <div class="note">Shifts every recommendation by 1&deg;C. Warm runners get lighter dressing.</div></div>
+  <div class="card"><div class="lbl">Weather</div><div class="row"><span>Location</span><span>Panania, Sydney</span></div>
+  <div class="row"><span>Source</span><span>Open-Meteo</span></div>
+  <div class="row"><span>Last updated</span><span class="mono">${wx?wx.at.replace('T',' '):'never'}</span></div></div>`;
+}
+function render(){
+  const v=S.view;
+  $('title').textContent={night:'Overnight',day:'Daytime',set:'Settings'}[v];
+  $('sub').textContent=wx?`Panania ${f1(wx.t)}° outside`:'Panania';
+  $('main').innerHTML={night,day,set:settings}[v]();
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.dataset.v){S.view=t.dataset.v}
+  else if(t.dataset.d){S.room=Math.min(35,Math.max(5,S.room+ +t.dataset.d))}
+  else if(t.dataset.k){S[t.dataset.k]=t.dataset.k==='baby'?+t.dataset.val:t.dataset.val}
+  else if(t.id==='refresh'){loadWx();return}
+  else return;
+  save();render();
+});
+render();loadWx();
+</script>
+</body>
+</html>
